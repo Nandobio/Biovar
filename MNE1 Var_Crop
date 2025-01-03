@@ -1,0 +1,37 @@
+# Modelagem de nicho ecológico
+# by Fernando Paulino JAN - 2025
+# Modificado de Bruno & Ana Carolina Loss
+
+#Corte de variáveis pela área de estudo
+
+library(terra)
+
+# Carregando as variáveis e criando o stack de rasters
+bio_folder = "./output/predictors/predmod/" 
+bio_path <-list.files(path = bio_folder, patter='*.asc$')
+bio_files <- paste(bio_folder,bio_path, sep="")
+bio <- rast(bio_files)
+
+#Carregando a área de calibração
+b <- vect("./data/shapes/calibrarea.shp", crs = "EPSG:4326")
+plot(b)
+
+# loop de corte dos preditores
+ for (i in 1:length(b)){
+   v <- b[i]
+   c <- crop(bio,v)
+   m <- mask(c,v)
+   id <- v$CLADO
+   out.dir <- paste0("./output/predictors/predmod/predmodcrop/", id, "/")
+   dir.create(out.dir)
+   writeRaster(m, paste0(out.dir,names(m),".asc"))
+ }
+caminho <-rast("./output/predictors/predmod/predmodcrop/Caiman_latirostris/bio1.asc")
+plot(caminho)
+
+######
+#####
+####
+###
+##
+#fim
