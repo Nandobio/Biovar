@@ -1,0 +1,45 @@
+# Modelagem de nicho ecológico
+# by Fernando Paulino JAN - 2025
+# Modificado de Bruno & Ana Carolina Loss
+
+#Cria uma máscara NA para os shapes das áreas cortadas.
+
+library(terra)
+
+# Carregar arquivo de ocorrência das espécies
+pts <- read.csv("./data/occour/Caimans.csv")
+pts$sp <- gsub(" ", "_", pts$sp)
+names <- unique(pts$sp)
+
+# Carregar preditores de calibração
+### Loop para criar máscara de NA para cada espécie
+
+for (i in 1:length(names)) {
+  
+  pred_folder = paste0("./output/predictors/predmod/predmodcrop/", names[i], "/")
+  pred_path <- list.files(path = pred_folder, patter = '*.asc$')
+  pred_files <- paste(pred_folder, pred_path, sep = "")
+  
+  pred0 <- rast(pred_files)
+  
+  # Cálculos para garantir que nenhuma célula tenha valor igual a zero
+  # Multiplica todas as células por 1000
+  
+  pred <- subst(pred0, 0, 100)
+  pred <- pred / pred
+  
+  # Multiplica todas as camadas para criar uma única camada com NA em todas as camadas
+  predNA <- prod(pred, na.rm = FALSE)
+  
+  plot(predNA, main = paste0("Máscara de NA ", names[i]))
+  writeRaster(predNA, paste0("./output/predNA/", names[i], "_predNA.tiff"))
+  
+}
+
+######
+#####
+####
+###
+##
+#fim
+
